@@ -1,69 +1,61 @@
 import requests
-import datetime
-import re
-import os
+from bs4 import BeautifulSoup
+
+API_URL = "https://alfa-leetcode-api.onrender.com/dailyQuestion"
 
 
-def get_daily_question():
-    # LeetCode GraphQL endpoint
-    url = "https://leetcode.com/graphql"
-    query = {
-        "operationName": "questionOfToday",
-        "query": """
-        query questionOfToday {
-          activeDailyCodingChallengeQuestion {
-            date
-            question {
-              questionId
-              frontendQuestionId
-              titleSlug
-              title
-              content
-            }
-          }
-        }
-        """,
-        "variables": {}
+def html_to_markdown(html):
+    soup = BeautifulSoup(html, "html.parser")
+
+    # Inline formatting
+    for code in soup.find_all("code"):
+        code.replace_with(f"`{code.get_text()}`")
+    for strong in soup.find_all("strong"):
+        strong.replace_with(f"{strong.get_text()}")
+
+    # Examples and code blocks
+    for pre in soup.find_all("pre"):
+        text = pre.get_text().strip()
+        pre.replace_with(f"\n```\n{text}\n```\n")
+
+    # Lists
+    for li in soup.find_all("li"):
+        li.insert_before("• ")
+        li.append("\n")
+
+    # Convert everything to text
+    text = soup.get_text()
+    # Collapse multiple newlines into max 2
+    text = "\n".join([line.strip()
+                     for line in text.splitlines() if line.strip()])
+    return text
+
+
+def fetch_daily_question():
+    response = requests.get(API_URL)
+    data = response.json()["data"]["activeDailyCodingChallengeQuestion"]
+
+    description_text = html_to_markdown(data["question"]["content"])
+
+    result = {
+        "date": data["date"],
+        "title": data["question"]["title"],
+        "description": description_text,
+        "topics": [tag["name"] for tag in data["question"]["topicTags"]],
+        "link": f"https://leetcode.com{data['link']}"
     }
-    headers = {
-        "Content-Type": "application/json",
-        "Referer": "https://leetcode.com/problemset/all/"
-    }
-    response = requests.post(url, json=query, headers=headers)
-    response.raise_for_status()
-    data = response.json()[
-        "data"]["activeDailyCodingChallengeQuestion"]["question"]
-
-    # Clean up title for filename
-    title_clean = re.sub(r'[^a-zA-Z0-9]+', '-', data['title']).strip('-')
-    date_str = datetime.datetime.utcnow().strftime('%Y%m%d')
-    file_name = f"{date_str}-LC-{data['frontendQuestionId']}-{title_clean}.py"
-    return file_name, data
+    return result
 
 
-def make_file(file_name, data):
-    description = re.sub(r'<[^>]+>', '', data['content'])  # Remove HTML tags
-    py_template = f'''"""
-LeetCode Problem #{data['frontendQuestionId']}: {data['title']}
-Date: {datetime.datetime.utcnow().strftime('%Y-%m-%d')}
-
-{description}
-"""
-
-# Write your solution below
-
-def solution():
-    pass
-'''
-    with open(file_name, 'w', encoding='utf-8') as f:
-        f.write(py_template)
-    print(f"Created file: {file_name}")
+def pretty_print(daily):
+    print(f"📅 Date: {daily['date']}")
+    print(f"📝 Title: {daily['title']}\n")
+    print("📖 Description:\n")
+    print(daily['description'])
+    print("\n🏷 Topics: " + ", ".join(daily['topics']))
+    print(f"🔗 Link: {daily['link']}")
 
 
 if __name__ == "__main__":
-    file_name, question_data = get_daily_question()
-    # Avoid overwrite if file already exists
-    if not os.path.exists(file_name):
-        make_file(file_name, question_data)
-    else:
-        print(f"{file_name} already exists.")
+    daily = fetch_daily_question()
+    pretty_print(daily)

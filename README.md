@@ -1,6 +1,7 @@
 # LeetcodePOTD
 
-This repository automatically fetches LeetCode's Daily Problem of the Day and creates a Python starter file for users to quickly begin working on the solution.
+This repository contains solutions for Leetcode's Daily Problem of the Day.
+There is a file which automatically fetches LeetCode's Daily Problem of the Day and creates a Python starter file for users to quickly begin working on the solution.
 
 ## Features
 

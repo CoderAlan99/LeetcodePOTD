@@ -1,9 +1,11 @@
 # leetcode_daily.py
+import os
 import requests
 from bs4 import BeautifulSoup
 
 LEETCODE_API_URL = "https://leetcode.com/graphql"
-
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 def html_to_markdown(html: str) -> str:
     """Convert LeetCode's HTML problem description into Markdown-like text."""
@@ -95,7 +97,8 @@ if __name__ == "__main__":
     message = pretty_format(daily)
     print(message)
 
-    # Bot Details
-    BOT_TOKEN = "8308626221:AAEBv0KtJHPwfFCJ6OBhTBKVuPN1NLm-_nU"
-    CHAT_ID = "-1002787612188"
-    send_to_telegram(BOT_TOKEN, CHAT_ID, message)
+    if BOT_TOKEN and CHAT_ID:
+        send_to_telegram(BOT_TOKEN, CHAT_ID, message)
+        print("✅ Sent to Telegram")
+    else:
+        print("⚠️ BOT_TOKEN or CHAT_ID not set, skipping Telegram send")

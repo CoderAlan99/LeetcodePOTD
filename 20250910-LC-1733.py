@@ -1,7 +1,7 @@
 class Solution:
     def minimumTeachings(self, n: int, languages: List[List[int]], friendships: List[List[int]]) -> int:
         """
-        Main thing here is find problematic users first then determine which of the language 
+        Main thing here is find problematic users first then determine which of the language
         """
         # Convert languages to set for faster checks
         user_langs = [set(lang) for lang in languages]

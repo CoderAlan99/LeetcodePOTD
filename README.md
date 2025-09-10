@@ -1,29 +1,21 @@
 # LeetcodePOTD
 
 This repository contains solutions for Leetcode's Daily Problem of the Day.
-There is a file which automatically fetches LeetCode's Daily Problem of the Day and creates a Python starter file for users to quickly begin working on the solution.
+There is a file which automatically fetches LeetCode's Daily Problem of the Day.
 
 ## Features
 
-- **Daily Scheduler:** Uses GitHub Actions to fetch and generate a Python file for LeetCode's daily question every day.
 - **File Naming Convention:** Each file is named as `YYYYMMDD-LC-QuestionNumber-QuestionTitle.py` for easy organization.
-- **Problem Description:** The problem description is automatically included as a docstring at the top of each Python file.
 
 ## Usage
 
-1. Clone the repository.
-2. Open the latest daily Python file.
-3. Read the problem description and start coding your solution in the provided template.
+1. Search by either Leetcode Question Number or Date of POTD.
+2. Solution and some basic notes are added.
 
 ## Contributing
 
 Feel free to submit your solutions as pull requests or open issues for improvements!
 
-## Automation Details
-
-- The scheduler is implemented via GitHub Actions in `.github/workflows/daily-leetcode.yml`.
-- The fetching logic is in `fetch_leetcode_daily.py`, which scrapes the LeetCode daily question using their public GraphQL endpoint.
-
 ## Example
 
-See [`20250907-LC-1-Two-Sum.py`](20250907-LC-1-Two-Sum.py) for a sample daily file.
+See [`20250908-LC-1317.py`](20250908-LC-1317.py) for a sample daily file.

@@ -33,18 +33,25 @@ def html_to_markdown(html):
 
 def fetch_daily_question():
     response = requests.get(API_URL)
-    data = response.json()["data"]["activeDailyCodingChallengeQuestion"]
+
+    if response.status_code != 200:
+        raise Exception(f"Error {response.status_code}: {response.text}")
+
+    try:
+        data = response.json()["data"]["activeDailyCodingChallengeQuestion"]
+    except Exception:
+        print("❌ Failed to parse JSON. Response was:\n", response.text[:500])
+        raise
 
     description_text = html_to_markdown(data["question"]["content"])
 
-    result = {
+    return {
         "date": data["date"],
         "title": data["question"]["title"],
         "description": description_text,
         "topics": [tag["name"] for tag in data["question"]["topicTags"]],
         "link": f"https://leetcode.com{data['link']}"
     }
-    return result
 
 
 def pretty_print(daily):
